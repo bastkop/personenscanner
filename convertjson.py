@@ -16,14 +16,13 @@ except:
 pianzahl = 3
 file = open(path+filetoread,'r')
 z = json.load(file)
-print(json.dumps(z,sort_keys=False,indent=10))
+#print(json.dumps(z,sort_keys=False,indent=10))
 
 l = 0
 id = np.empty([len(z['views']),2],dtype='object')
-print(str(len(z['views'])))
 for  p in z['views']:
-        print(l)
-        print('poseId '+ p['poseId'])
+        #print(l)
+        #print('poseId '+ p['poseId'])
         print('path '+ p['path'])
         id[l,0] = str(p['path'])
 
@@ -32,18 +31,19 @@ for  p in z['views']:
                 if id[l,0][k] == 'p' and id[l,0][k+1] == 'i' and int(id[l,0][k+2]) in range(1,pianzahl+1,1) :
                         zaehl = 0
                         for h in range(k,len(id[l,0]),1):
-                                print(h)
+                                #print(h)
                                 schtring = schtring+str(id[l,0][h]) 
                                 zaehl += 1
-                        print(schtring)
+                        #print(schtring)
                         id[l,0] = schtring
                         break
         id[l,1] = str(p['poseId'])
         l += 1
 print(id)
-print(len(id))
+print('ID Counter: '+str(len(id)))
 #Austauschen der Rotationsmatrix und Ortsvektoren
 x = np.genfromtxt(path+xyzrotationsmatrix,dtype='str')
+l = 0
 for p in z['poses']:
         for k in range(0,id.shape[0],1):
                 if id[k,1] == p['poseId']:
@@ -56,7 +56,7 @@ for p in z['poses']:
                 #print(str(id[k,0]))
                 if str(x[i,0]) == str(id[k,0]):
                         break
-        #print(i) 
+        #print(i)
         p['pose'] = {
                  'transform': {
                          'rotation': [
@@ -77,21 +77,13 @@ for p in z['poses']:
                         ]},
                 'locked' : '1'
                 }
-        #print('\n')
-#z['featuresFolders'] = ''
-#z['matchesFolders'] = ''
-#Testweise nur Austausch der Ortsvektoren funktioniert noch nicht
-#       for u in p['pose']:
-#               for r in u:
-#                       r['center'] = {[
-#                               (float(x[i,1])*0.0012937233971295),
-#                                (float(x[i,2])*0.0012937233971295),
-#                                (float(x[i,3])*0.0012937233971295)
-#                       ]}
+        l+=1
+print('Poses Counter : '+str(l))
 
-#print(z)
+print('Deleting featuresFolders & matchesfolders path..')
+del z['featuresFolders']
+del z['matchesFolders']
 file.close
 ftw = open(path+filetowrite,'w')
 ftw.write(json.dumps(z,sort_keys=False,indent=4))
 ftw.close
-
